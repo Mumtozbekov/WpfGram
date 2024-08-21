@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<Platforms>AnyCPU;x86;x64</Platforms>
+		<StartupObject>WpfGram.App</StartupObject>
+		<PlatformTarget>x86</PlatformTarget>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets\AuthorizationStateWaitCode.json" />
+	  <None Remove="Assets\AuthorizationStateWaitPassword.json" />
+	  <None Remove="Assets\SplashScreen.scale-400.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="Emoji.Wpf" Version="0.3.4" />
+		<PackageReference Include="LottieSharp" Version="2.3.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="QRCoder" Version="1.4.3" />
+		<PackageReference Include="WPF-UI" Version="3.0.0-preview.13" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="Telegram.Td">
+			<HintPath>..\Libraries\Telegram.Td.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Assets\AuthorizationStateWaitCode.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Assets\AuthorizationStateWaitPassword.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <Resource Include="Assets\SplashScreen.scale-400.png">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	</ItemGroup>
+
+</Project>

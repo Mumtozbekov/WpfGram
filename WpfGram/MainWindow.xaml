@@ -1,0 +1,41 @@
+﻿<ui:FluentWindow  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" x:Class="WpfGram.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfGram"
+        mc:Ignorable="d"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        WindowCornerPreference="Round"
+        WindowStartupLocation="CenterScreen"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Cursor="">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="242"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+
+        <ui:TitleBar
+        x:Name="TitleBar"
+        Title="{Binding ViewModel.ApplicationTitle}"
+        Grid.Column="1" >
+            <!--<ui:TitleBar.Icon>
+            <ui:ImageIcon Source="pack://application:,,,/Resources/DOLogo.png" />
+        </ui:TitleBar.Icon>-->
+        </ui:TitleBar>
+        <Frame Name="RootFrame" Grid.Row="1" Grid.ColumnSpan="3"/>
+        <ui:NavigationView 
+                           IsBackButtonVisible="Collapsed" 
+                           IsPaneToggleVisible="False"
+                           IsPaneOpen="False" PaneDisplayMode="Bottom"
+                           IsPaneVisible="False" Grid.RowSpan="2" Grid.ColumnSpan="2"  x:Name="RootNavigation"/>
+        
+        <ContentPresenter x:Name="RootContentDialog" Grid.Row="0" Grid.RowSpan="5" />
+    </Grid>
+</ui:FluentWindow>

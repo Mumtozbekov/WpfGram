@@ -1,0 +1,887 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:WpfGram"
+    xmlns:converters="clr-namespace:WpfGram.Converters"
+    xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf" 
+    xmlns:TdApi="clr-namespace:Telegram.Td.Api;assembly=Telegram.Td" 
+    xmlns:viewModels ="clr-namespace:WpfGram.ViewModels"
+    xmlns:controls="clr-namespace:WpfGram.Controls" 
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:lottie="clr-namespace:LottieSharp.WPF;assembly=LottieSharp">
+    <!--<ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary
+                    Source="pack://application:,,,/Styles/Buttons.xaml" />
+        <ResourceDictionary
+                    Source="pack://application:,,,/Styles/Generic.xaml" />
+    </ResourceDictionary.MergedDictionaries>-->
+    <converters:IsEqualConverter
+        x:Key="IsEqualConverter" />
+    <converters:MessageHasTextConverter
+        x:Key="messageHasText" />
+
+    <Storyboard x:Key="playAnim">
+        <DoubleAnimation 
+             Storyboard.TargetProperty="(Slider.Value)"
+             
+             To="100"
+                AutoReverse="False" 
+                
+             Duration="00:00:04" />
+    </Storyboard>
+    <Style x:Key="SliderRepeatButton" TargetType="RepeatButton">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border Background="Transparent" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SliderRepeatButton1" TargetType="RepeatButton">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border SnapsToDevicePixels="True" Height="{TemplateBinding Height}" Background="CornflowerBlue"  />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SliderThumb" TargetType="Thumb">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border Height="21" Width="10" Background="{TemplateBinding Background}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="Slider"  TargetType="Slider">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+
+            <Border x:Name="TrackBackground" VerticalAlignment="Center" Margin="0,-10,0,0" Background="White" Height="{TemplateBinding Height}"   Grid.Row="1"  BorderThickness="1"/>
+            <Track Grid.Row="1" x:Name="PART_Track" Margin="0,-10,0,0"  >
+                <Track.DecreaseRepeatButton >
+                    <RepeatButton Height="21" Style="{StaticResource SliderRepeatButton1}"  Command="Slider.DecreaseLarge" />
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource SliderThumb}" Background="Transparent" />
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton  Height="21" Style="{StaticResource SliderRepeatButton}" Command="Slider.IncreaseLarge" />
+                </Track.IncreaseRepeatButton>
+            </Track>
+            <TickBar x:Name="BottomTick" Fill="LightGray"   SnapsToDevicePixels="True" Grid.Row="2"   Placement="Bottom" Height="4" Visibility="Collapsed" />
+        </Grid>
+        <ControlTemplate.Triggers>
+
+            <Trigger Property="TickPlacement" Value="BottomRight">
+                <Setter TargetName="BottomTick"  Property="Visibility"  Value="Visible" />
+            </Trigger>
+            <Trigger Property="TickPlacement" Value="Both">
+
+                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="seekBar" TargetType="Slider">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="MinHeight" Value="21" />
+                <Setter Property="MinWidth" Value="104" />
+                <Setter Property="Template" Value="{StaticResource Slider}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+
+    <DataTemplate
+        DataType="{x:Type viewModels:MessageViewModel}"
+        x:Key="textMessage">
+        <Border >
+
+            <Grid
+                Margin="8 4 9 4">
+
+
+                <Border
+                    x:Name="ContentBorder"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Padding="14,10,3.5,3.5"
+                    HorizontalAlignment="Left"
+                    MaxWidth="414"
+                    Background="{ui:ThemeResource ControlFillColorDefaultBrush}"
+                    CornerRadius="5 5 5 0"
+                    Margin="6,0">
+                    <Grid
+                        
+                        x:Name="mainGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition
+                                Height="auto" />
+                            <RowDefinition
+                                Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition
+                                Width="*" />
+                            <ColumnDefinition
+                                Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+                            <Grid Visibility="{Binding Message.ReplyTo,Converter={converters:NonZeroToVisibilityConverter}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Width="2"  Margin="0" RadiusX="0" Grid.Row="0" RadiusY="2" Fill="{Binding ReplyToMessage.SenderId,Converter={converters:IdToColorConverter}}"/>
+                                <StackPanel Grid.Column="1" Margin="6,3" VerticalAlignment="Center" >
+
+                                    <emoji:TextBlock TextTrimming="CharacterEllipsis"
+                                                 Text="{Binding ReplyToUserName}"
+                                                 Grid.Column="1"
+                                                 FontSize="16"
+                                                     TextWrapping="WrapWithOverflow"
+                                                 Foreground="{Binding ReplyToMessage.SenderId,Converter={converters:IdToColorConverter}}"/>
+                                    <controls:MessagePreviewer 
+                                                 DataContext="{Binding ReplyToMessage.Content}"
+                                                 Grid.Column="1"
+                                                     Padding="0"
+                                        MaxHeight="40"
+                                                 Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"/>
+                                </StackPanel>
+
+
+                            </Grid>
+
+                            <emoji:TextBlock
+                            TextWrapping="Wrap"
+                            Name="tbContent"
+                            Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                            FontSize="15"
+                            Margin="0"
+                            Text="{Binding Content.Text.Text}" />
+                            <ListBox Margin="-5,2,0,2" ItemsSource="{Binding Message.InteractionInfo.Reactions}" >
+                                <ListBox.Resources>
+                                    <Style
+                                    TargetType="{x:Type ScrollViewer}">
+                                        <Setter
+                                        Property="LayoutTransform">
+                                            <Setter.Value>
+                                                <ScaleTransform
+                                                ScaleX="1"
+                                                ScaleY="1" />
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBox},Path=ActualHeight}"/>
+                                    </Style>
+                                </ListBox.Resources>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="{x:Type ListBoxItem}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                    <Grid Height="22">
+                                                        <Border CornerRadius="11" Background="{ui:ThemeResource SystemAccentColorPrimaryBrush}" Margin="2,0" Opacity="0.3">
+
+                                                        </Border>
+                                                        <Border  Padding="6,0,6,5"  >
+                                                            <StackPanel Orientation="Horizontal">
+
+                                                                <emoji:TextBlock Text="{Binding Type.Emoji}"  FontSize="16" Height="22" Padding="0" />
+                                                                <TextBlock Text="{Binding TotalCount}"  Margin="2,0" Foreground="{ui:ThemeResource SystemAccentColorPrimaryBrush}"/>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate >
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                        </StackPanel>
+                        <Grid
+                            x:Name="dateGrid"
+                            Grid.Column="1"
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Bottom">
+                            <Border
+                                x:Name="dateBg"
+                                CornerRadius="4"
+                                Opacity="0.7" />
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="5,2">
+                                <TextBlock
+                                    Padding="0"
+                                    Text="{Binding Message.Date, Converter={converters:IntToDateTimeConverter},StringFormat='{}{0:HH:mm}'}"
+                                    Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                    VerticalAlignment="Bottom" />
+                                <!--<TextBlock Text="&#xEA03;&#x00A0;"/>-->
+                                <ui:SymbolIcon x:Name="checkIcon"
+                                    Margin="5,0,0,0"
+                                    Symbol="ChevronDoubleUp20"
+                                    Height="14"
+                                    Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                    Width="14"/>
+                            </StackPanel>
+                        </Grid>
+
+                    </Grid>
+
+                </Border>
+                <Path
+                    Name="tail"
+                    Width="6"
+                    VerticalAlignment="Bottom"
+                    FlowDirection="RightToLeft"
+                    HorizontalAlignment="Left"
+                    Height="10"
+                    Data="M0 0C0 3.21429 1.76471 7.67857 5.29412 8.57143C5.29412 8.57143 6 8.57143 6 9.28572C6 10 5.29412 10 5.29412 10L0 10V0Z"
+                    Fill="{Binding ElementName=ContentBorder,Path=Background}" />
+            </Grid>
+        </Border>
+        <DataTemplate.Triggers>
+            <DataTrigger
+                Binding="{Binding Message.IsOutgoing}"
+                Value="true">
+                <Setter
+                    Property="HorizontalAlignment"
+                    Value="Right"
+                    TargetName="ContentBorder" />
+
+
+                <Setter
+                    Property="HorizontalAlignment"
+                    Value="Right"
+                    TargetName="tail" />
+                <Setter
+                    Property="FlowDirection"
+                    Value="LeftToRight"
+                    TargetName="tail" />
+                <Setter
+                    Property="CornerRadius"
+                    Value="5,5,0,5"
+                    TargetName="ContentBorder" />
+                <Setter
+                    Property="Background"
+                    Value="{ui:ThemeResource SystemAccentColorSecondaryBrush}"
+                    TargetName="ContentBorder" />
+                <Setter
+                    Property="Visibility"
+                    TargetName="checkIcon"
+                    Value="{Binding Message.Id,Converter={converters:NonZeroToVisibilityConverter}}" />
+            </DataTrigger>
+
+
+            <DataTrigger
+                Binding="{Binding IsRead}"
+                Value="true">
+                <Setter
+                    Property="Symbol"
+                    TargetName="checkIcon"
+                    Value="Check20" />
+                <!--<Setter
+                    Property="Background"
+                    TargetName="ContentBorder"
+                    Value="Transparent" />-->
+            </DataTrigger>
+            <DataTrigger
+                Binding="{Binding Path=Content,Converter={StaticResource messageHasText}}"
+                Value="true">
+                <Setter
+                    Property="FontSize"
+                    TargetName="tbContent"
+                    Value="36" />
+                <Setter
+                    Property="TextAlignment"
+                    TargetName="tbContent"
+                    Value="Right" />
+                <Setter
+                    Property="HorizontalAlignment"
+                    TargetName="tbContent"
+                    Value="Right" />
+                <Setter
+                    Property="Grid.Column"
+                    TargetName="tbContent"
+                    Value="1" />
+                <Setter
+                    Property="Background"
+                    TargetName="ContentBorder"
+                    Value="Transparent" />
+                <Setter
+                    Property="Background"
+                    TargetName="dateBg"
+                    Value="{ui:ThemeResource ControlFillColorDefaultBrush}" />
+                <Setter
+                    Property="Grid.Row"
+                    TargetName="dateGrid"
+                    Value="1" />
+                <Setter
+                    Property="Margin"
+                    TargetName="dateGrid"
+                    Value="0,-5,5,0" />
+
+            </DataTrigger>
+
+
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <DataTemplate
+        DataType="{x:Type TdApi:Message}"
+        x:Key="unsupportedMessage">
+        <Border>
+
+            <Grid
+                Margin="8 4 9 4">
+
+
+                <Border
+                    x:Name="ContentBorder"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Padding="3.5"
+                    HorizontalAlignment="Left"
+                    MaxWidth="414"
+                    Background="{ui:ThemeResource ControlFillColorDefaultBrush}"
+                    CornerRadius="5 5 5 0"
+                    Margin="6,0">
+                    <Grid
+                        x:Name="mainGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition
+                                Height="auto" />
+                            <RowDefinition
+                                Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition
+                                Width="*" />
+                            <ColumnDefinition
+                                Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+
+
+                        <emoji:TextBlock
+                            TextWrapping="Wrap"
+                            Name="tbContent"
+                            Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                            FontSize="15"
+                            Margin="5"
+                            Text="Unsupported message type" 
+                            FontStyle="Italic"/>
+                        <Grid
+                            x:Name="dateGrid"
+                            Grid.Column="1"
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Bottom">
+                            <Border
+                                x:Name="dateBg"
+                                CornerRadius="4"
+                                Opacity="0.7" />
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="5,2">
+                                <TextBlock
+                                    Padding="0"
+                                    Text="{Binding Message.Date, Converter={converters:IntToDateTimeConverter},StringFormat='{}{0:HH:mm}'}"
+                                    Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                    VerticalAlignment="Bottom" />
+                                <!--<TextBlock Text="&#xEA03;&#x00A0;"/>-->
+                                <ui:SymbolIcon x:Name="checkIcon"
+                                            Margin="5,0,0,0"
+                                            Symbol="ChevronDoubleUp20"
+                                            Height="14"
+                                            Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                            Width="14"/>
+                            </StackPanel>
+                        </Grid>
+
+                    </Grid>
+
+                </Border>
+                <Path
+                    Name="tail"
+                    Width="6"
+                    VerticalAlignment="Bottom"
+                    FlowDirection="RightToLeft"
+                    HorizontalAlignment="Left"
+                    Height="10"
+                    Data="M0 0C0 3.21429 1.76471 7.67857 5.29412 8.57143C5.29412 8.57143 6 8.57143 6 9.28572C6 10 5.29412 10 5.29412 10L0 10V0Z"
+                    Fill="{Binding ElementName=ContentBorder,Path=Background}" />
+            </Grid>
+        </Border>
+        <DataTemplate.Triggers>
+            <DataTrigger
+                Binding="{Binding Message.IsOutgoing}"
+                Value="true">
+                <Setter
+                    Property="HorizontalAlignment"
+                    Value="Right"
+                    TargetName="ContentBorder" />
+
+
+                <Setter
+                    Property="HorizontalAlignment"
+                    Value="Right"
+                    TargetName="tail" />
+                <Setter
+                    Property="FlowDirection"
+                    Value="LeftToRight"
+                    TargetName="tail" />
+                <Setter
+                    Property="CornerRadius"
+                    Value="5,5,0,5"
+                    TargetName="ContentBorder" />
+                <Setter
+                    Property="Background"
+                    Value="{ui:ThemeResource SystemAccentColorSecondaryBrush}"
+                    TargetName="ContentBorder" />
+                <Setter
+                    Property="Visibility"
+                    TargetName="checkIcon"
+                    Value="{Binding Message.Id,Converter={converters:NonZeroToVisibilityConverter}}" />
+            </DataTrigger>
+
+
+            <!--<DataTrigger
+                Binding="{Binding IsRead}"
+                Value="true">
+                <Setter
+                    Property="Data"
+                    TargetName="checkIcon"
+                    Value="{StaticResource ReadIcon}" />
+            </DataTrigger>-->
+            <DataTrigger
+                Binding="{Binding Path=Message.Content,Converter={StaticResource messageHasText}}"
+                Value="true">
+                <Setter
+                    Property="FontSize"
+                    TargetName="tbContent"
+                    Value="36" />
+                <Setter
+                    Property="TextAlignment"
+                    TargetName="tbContent"
+                    Value="Right" />
+                <Setter
+                    Property="HorizontalAlignment"
+                    TargetName="tbContent"
+                    Value="Right" />
+                <Setter
+                    Property="Grid.Column"
+                    TargetName="tbContent"
+                    Value="1" />
+                <Setter
+                    Property="Background"
+                    TargetName="ContentBorder"
+                    Value="Transparent" />
+                <Setter
+                    Property="Background"
+                    TargetName="dateBg"
+                    Value="{ui:ThemeResource ControlFillColorDefaultBrush}" />
+                <Setter
+                    Property="Grid.Row"
+                    TargetName="dateGrid"
+                    Value="1" />
+                <Setter
+                    Property="Margin"
+                    TargetName="dateGrid"
+                    Value="0,-5,5,0" />
+
+            </DataTrigger>
+
+
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <DataTemplate
+        DataType="{x:Type viewModels:MessageViewModel}"
+        x:Key="stickerMessage">
+        <Border>
+
+            <Grid
+                Margin="8 4 9 4">
+
+
+                <Border
+                    x:Name="ContentBorder"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Padding="3.5"
+                    HorizontalAlignment="Left"
+                    MaxWidth="414"
+                    Background="Transparent"
+                    CornerRadius="5 5 5 0"
+                    Margin="6,0">
+                    <Grid
+                        x:Name="mainGrid">
+                        <!--<Grid.RowDefinitions>
+                            <RowDefinition
+                                Height="auto" />
+                            <RowDefinition
+                                Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition
+                                Width="*" />
+                            <ColumnDefinition
+                                Width="auto" />
+                        </Grid.ColumnDefinitions>-->
+
+                        <!--<lottie:LottieAnimationView
+                            AutoPlay="True"
+                           Repeat="Restart"
+                    RepeatCount="100"
+                            Height="240" Width="240"
+                            Name="lottiePlayer"
+                            FileName="{Binding Content,Converter={converters:StickerConverter}}"
+                Margin="0,30"/>-->
+                        <Image DataContext="{Binding Content, Converter={converters:ImageStickerConverter}}" Source="{Binding Path=Result}" Height="160" Width="160"  Stretch="Uniform"/>
+
+                        <!--<emoji:TextBlock
+                            TextWrapping="Wrap"
+                            Name="tbContent"
+                            Foreground="{DynamicResource SecondaryForeground}"
+                            FontSize="15"
+                            Margin="5"
+                            Text="{Binding }" 
+                            FontStyle="Italic"/>
+                        <emoji:TextBlock
+                            Visibility="Hidden"
+                            Text="{Binding Content,Converter={converters:StickerConverter}}" 
+                            />-->
+                        <Grid
+                            x:Name="dateGrid"
+                            Grid.Column="1"
+                            Margin="0,0,5,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom">
+                            <Border
+                                x:Name="dateBg"
+                                CornerRadius="4"
+                                Background="{ui:ThemeResource ControlFillColorDefaultBrush}"
+                                Opacity="0.7" />
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="5,2">
+                                <TextBlock
+                                    Padding="0"
+                                    Text="{Binding Message.Date, Converter={converters:IntToDateTimeConverter},StringFormat='{}{0:HH:mm}'}"
+                                    Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                    VerticalAlignment="Bottom" />
+                                <!--<TextBlock Text="&#xEA03;&#x00A0;"/>-->
+                               
+                                <ui:SymbolIcon x:Name="checkIcon"
+                                               Margin="5,0,0,0"
+                                               Symbol="ChevronDoubleUp20"
+                                               Height="14"
+                                               Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                               Width="14"/>
+                            </StackPanel>
+                        </Grid>
+
+                    </Grid>
+
+                </Border>
+                <Path
+                    Name="tail"
+                    Width="6"
+                    VerticalAlignment="Bottom"
+                    FlowDirection="RightToLeft"
+                    HorizontalAlignment="Left"
+                    Height="10"
+                    Data="M0 0C0 3.21429 1.76471 7.67857 5.29412 8.57143C5.29412 8.57143 6 8.57143 6 9.28572C6 10 5.29412 10 5.29412 10L0 10V0Z"
+                    Fill="{Binding ElementName=ContentBorder,Path=Background}" />
+            </Grid>
+        </Border>
+        <DataTemplate.Triggers>
+            <DataTrigger
+                Binding="{Binding Message.IsOutgoing}"
+                Value="true">
+                <Setter
+                    Property="HorizontalAlignment"
+                    Value="Right"
+                    TargetName="ContentBorder" />
+
+
+                <Setter
+                    Property="HorizontalAlignment"
+                    Value="Right"
+                    TargetName="tail" />
+                <Setter
+                    Property="FlowDirection"
+                    Value="LeftToRight"
+                    TargetName="tail" />
+                <Setter
+                    Property="CornerRadius"
+                    Value="5,5,0,5"
+                    TargetName="ContentBorder" />
+
+                <Setter
+                    Property="Visibility"
+                    TargetName="checkIcon"
+                    Value="{Binding Message.Id,Converter={converters:NonZeroToVisibilityConverter}}" />
+            </DataTrigger>
+
+
+            <DataTrigger
+                Binding="{Binding IsRead}"
+                Value="true">
+                <Setter
+                    Property="Symbol"
+                    TargetName="checkIcon"
+                    Value="Check20" />
+            </DataTrigger>
+            <DataTrigger
+                Binding="{Binding Path=Content,Converter={StaticResource messageHasText}}"
+                Value="true">
+                <!--<Setter
+                    Property="FontSize"
+                    TargetName="tbContent"
+                    Value="36" />
+                <Setter
+                    Property="TextAlignment"
+                    TargetName="tbContent"
+                    Value="Right" />
+                <Setter
+                    Property="HorizontalAlignment"
+                    TargetName="tbContent"
+                    Value="Right" />
+                <Setter
+                    Property="Grid.Column"
+                    TargetName="tbContent"
+                    Value="1" />-->
+                <Setter
+                    Property="Background"
+                    TargetName="ContentBorder"
+                    Value="Transparent" />
+                <Setter
+                    Property="Background"
+                    TargetName="dateBg"
+                    Value="transparent" />
+                <Setter
+                    Property="Grid.Row"
+                    TargetName="dateGrid"
+                    Value="1" />
+                <Setter
+                    Property="Margin"
+                    TargetName="dateGrid"
+                    Value="0,-5,5,0" />
+
+            </DataTrigger>
+
+
+        </DataTemplate.Triggers>
+    </DataTemplate>
+   
+    <DataTemplate
+        DataType="{x:Type viewModels:MessageViewModel}"
+        x:Key="animatedMessage">
+        <Border>
+
+            <Grid
+                Margin="8 4 9 4">
+
+
+                <Border
+                    x:Name="ContentBorder"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Padding="3.5"
+                    HorizontalAlignment="Left"
+                    MaxWidth="414"
+                    Background="Transparent"
+                    CornerRadius="5 5 5 0"
+                    Margin="6,0">
+                    <Grid
+                        x:Name="mainGrid">
+                       
+                        <controls:AnimatedStickerView x:Name="AnimationView" VerticalContentAlignment="Bottom" 
+                                                      AnimationClicked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem},Path=DataContext.AnimationClicked}"
+                                                      HorizontalContentAlignment="Left" DataContext="{Binding Message}"/>
+                        <!--<lottie:LottieAnimationView
+                            AutoPlay="True"
+                           Repeat="Restart"
+                    RepeatCount="1000"
+                            Grid.ColumnSpan="2"
+                            Grid.RowSpan="2"
+                            Height="150" Width="150"
+                            Name="lottiePlayer"
+                            DataContext="{Binding Message.Content,Converter={converters:StickerConverter}}"
+                            FileName="{Binding Path=Result}"
+                Margin="0,0"/>-->
+
+                        <!--<emoji:TextBlock
+                            TextWrapping="Wrap"
+                            Name="tbContent"
+                            Foreground="{DynamicResource SecondaryForeground}"
+                            FontSize="15"
+                            Margin="5"
+                            Text="{Binding }" 
+                            FontStyle="Italic"/>
+                        <emoji:TextBlock
+                            Visibility="Hidden"
+                            Text="{Binding Content,Converter={converters:StickerConverter}}" 
+                            />-->
+                        <Grid
+                            x:Name="dateGrid"
+                            Grid.Column="1"
+                            Margin="0,0,5,0"
+                          HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom">
+                            <Border
+                                x:Name="dateBg"
+                                CornerRadius="4"
+                                Background="{ui:ThemeResource ControlFillColorDefaultBrush}"
+                                Opacity="0.7" />
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="5,2">
+                                <TextBlock
+                                    Padding="0"
+                                    Text="{Binding Message.Date, Converter={converters:IntToDateTimeConverter},StringFormat='{}{0:HH:mm}'}"
+                                    Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                    VerticalAlignment="Bottom" />
+                                <!--<TextBlock Text="&#xEA03;&#x00A0;"/>-->
+                             
+                                <ui:SymbolIcon x:Name="checkIcon"
+                                               Margin="5,0,0,0"
+                                               Symbol="ChevronDoubleUp20"
+                                               Height="14"
+                                               Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                                               Width="14"/>
+                            </StackPanel>
+                        </Grid>
+
+                    </Grid>
+
+                </Border>
+                <Path
+                    Name="tail"
+                    Width="6"
+                    VerticalAlignment="Bottom"
+                    FlowDirection="RightToLeft"
+                    HorizontalAlignment="Left"
+                    Height="10"
+                    Data="M0 0C0 3.21429 1.76471 7.67857 5.29412 8.57143C5.29412 8.57143 6 8.57143 6 9.28572C6 10 5.29412 10 5.29412 10L0 10V0Z"
+                    Fill="{Binding ElementName=ContentBorder,Path=Background}" />
+            </Grid>
+        </Border>
+        <DataTemplate.Triggers>
+            <DataTrigger
+                Binding="{Binding Message.IsOutgoing}"
+                Value="true">
+                <Setter
+                    Property="HorizontalAlignment"
+                    Value="Right"
+                    TargetName="ContentBorder" />
+                <Setter
+                    Property="HorizontalContentAlignment"
+                    Value="Right"
+                    TargetName="AnimationView" />
+
+
+                <Setter
+                    Property="HorizontalAlignment"
+                    Value="Right"
+                    TargetName="tail" />
+                <Setter
+                    Property="FlowDirection"
+                    Value="LeftToRight"
+                    TargetName="tail" />
+                <Setter
+                    Property="CornerRadius"
+                    Value="5,5,0,5"
+                    TargetName="ContentBorder" />
+
+                <Setter
+                    Property="Visibility"
+                    TargetName="checkIcon"
+                    Value="{Binding Message.Id,Converter={converters:NonZeroToVisibilityConverter}}" />
+            </DataTrigger>
+
+
+            <DataTrigger
+                Binding="{Binding IsRead}"
+                Value="true">
+                <Setter
+                    Property="Symbol"
+                    TargetName="checkIcon"
+                    Value="Check20" />
+            </DataTrigger>
+            <DataTrigger
+                Binding="{Binding Path=Content,Converter={StaticResource messageHasText}}"
+                Value="true">
+                <!--<Setter
+                    Property="FontSize"
+                    TargetName="tbContent"
+                    Value="36" />
+                <Setter
+                    Property="TextAlignment"
+                    TargetName="tbContent"
+                    Value="Right" />
+                <Setter
+                    Property="HorizontalAlignment"
+                    TargetName="tbContent"
+                    Value="Right" />
+                <Setter
+                    Property="Grid.Column"
+                    TargetName="tbContent"
+                    Value="1" />-->
+                <Setter
+                    Property="Background"
+                    TargetName="ContentBorder"
+                    Value="Transparent" />
+                <Setter
+                    Property="Background"
+                    TargetName="dateBg"
+                    Value="transparent" />
+                <Setter
+                    Property="Grid.Row"
+                    TargetName="dateGrid"
+                    Value="1" />
+                <Setter
+                    Property="Margin"
+                    TargetName="dateGrid"
+                    Value="0,-5,5,0" />
+
+            </DataTrigger>
+
+
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+
+</ResourceDictionary>

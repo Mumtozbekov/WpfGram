@@ -1,0 +1,42 @@
+﻿<ContentControl x:Class="WpfGram.Controls.AnimatedStickerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfGram.Controls" xmlns:lottie="clr-namespace:LottieSharp.WPF;assembly=LottieSharp"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <lottie:LottieAnimationView
+                            AutoPlay="True"
+                            Repeat="Restart"
+                            RepeatCount="1000"
+                            Grid.ColumnSpan="2"
+                            Grid.RowSpan="2"
+                            HorizontalAlignment="{Binding RelativeSource={RelativeSource AncestorType=local:AnimatedStickerView},Path=HorizontalContentAlignment}"
+                            VerticalAlignment="{Binding RelativeSource={RelativeSource AncestorType=local:AnimatedStickerView},Path=VerticalContentAlignment}"
+                            Height="250" Width="250" 
+                            Mouse.MouseDown="AnimatedStickerPlayer_MouseDown"
+                            Cursor="Hand"
+                            Panel.ZIndex="20"
+                            Name="AnimatedStickerPlayer"
+                            Margin="0,0"/>
+        <lottie:LottieAnimationView
+                            AutoPlay="False"
+                            Repeat="Restart"
+                            RepeatCount="0"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            Grid.ColumnSpan="2"
+                            Grid.RowSpan="2"
+                            Cursor="Hand"
+                            HorizontalAlignment="{Binding RelativeSource={RelativeSource AncestorType=local:AnimatedStickerView},Path=HorizontalContentAlignment}"
+                            VerticalAlignment="{Binding RelativeSource={RelativeSource AncestorType=local:AnimatedStickerView},Path=VerticalContentAlignment}"
+                            Height="350" Width="350"
+                            Name="PremiumPlayer"
+                            Visibility="Collapsed"
+                            Panel.ZIndex="100"
+                            OnStop="PremiumPlayer_OnStop"
+                            Margin="-100,-100,0,-50"/>
+
+    </Grid>
+</ContentControl>

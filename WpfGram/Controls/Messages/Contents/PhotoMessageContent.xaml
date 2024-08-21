@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="WpfGram.Controls.PhotoMessageContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfGram.Controls" 
+             xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:utils="clr-namespace:WpfGram.Utils"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Style>
+        <Style TargetType="{x:Type local:PhotoMessageContent}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type local:PhotoMessageContent}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Border x:Name="BlurBorder">
+                                <Border.Effect>
+                                    <BlurEffect x:Name="blur" Radius="30"/>
+                                </Border.Effect>
+                                <Image x:Name="Preview" MaxHeight="430" MaxWidth="430" MinHeight="156" Stretch="Uniform" Cursor="Hand" PreviewMouseUp="Preview_MouseUp">
+
+                                </Image>
+                            </Border>
+                            <Border Background="#24000000" Visibility="{Binding ElementName=DownloadButton,Path=Visibility}"/>
+                            <ui:Button Style="{StaticResource ButtonWithRing}" 
+                                    BorderBrush="Transparent" 
+                                    Cursor="Hand"   
+                                    HorizontalAlignment="Center"
+                                    utils:ButtonsAssist.IsIndeterminate="true"
+                                    utils:ButtonsAssist.IsBusy="{Binding RelativeSource={RelativeSource AncestorType=local:PhotoMessageContent},Path=IsSaving}"
+                                    Name="DownloadButton"  
+                                    Background="#20000000" Height="42" Width="42" Padding="0">
+                                <ui:SymbolIcon Symbol="ArrowCircleDown24" FontSize="32"  Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}" />
+                            </ui:Button>
+                            <emoji:TextBlock  Text="{Binding Content.Caption.Text}" 
+                                              Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}" 
+                                              Grid.Row="1" MaxWidth="{Binding ElementName=Preview,Path=ActualWidth}" 
+                                              Margin="5" TextWrapping="Wrap" />
+
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+            
+    </UserControl.Style>
+</UserControl>
