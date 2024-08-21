@@ -1,4 +1,5 @@
 <p align="center">
+  <img src="development-logo.png" width=128 height=128>
   <h3 align="center">WpfGram</h3>
 
   <p align="center">
