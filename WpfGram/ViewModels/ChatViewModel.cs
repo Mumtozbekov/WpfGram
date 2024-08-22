@@ -21,6 +21,8 @@ namespace WpfGram.ViewModels
         [ObservableProperty]
         private Chat _chat;
         [ObservableProperty]
+        private string photo;
+        [ObservableProperty]
         private Message _lastMessage;
         [ObservableProperty]
         private ObservableCollection<MessageViewModel> _messages = new();
@@ -34,7 +36,7 @@ namespace WpfGram.ViewModels
         private double _scrollPosition;
         [ObservableProperty]
         private User _user;
-      
+
         public ChatViewModel()
         {
             _messageSet = new();
@@ -44,9 +46,21 @@ namespace WpfGram.ViewModels
         {
             _chat = chat;
             LastMessage = _chat?.LastMessage;
+            LoadPhoto();
         }
 
-       
+        private async void LoadPhoto()
+        {
+            if (_chat.Photo != null && string.IsNullOrEmpty(_chat.Photo.Small.Local.Path))
+            {
+                TgClientHelper.TgClient.Send(new DownloadFile(_chat.Photo.Small.Id, 1, 0, 1, true), new CustomUpdateHandler((o) =>
+                {
+                    Photo = _chat.Photo.Small.Local.Path;
+                }));
+            }
+            else
+                Photo = _chat.Photo?.Small?.Local?.Path;
+        }
         public async void GetUser()
         {
             if (User == null)

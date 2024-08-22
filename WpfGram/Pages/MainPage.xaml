@@ -133,7 +133,7 @@
                                         VerticalAlignment="Center" />
 
                                     <Image
-                                            Source="{Binding Chat.Photo.Small.Local.Path}" RenderOptions.BitmapScalingMode="Fant" RenderOptions.CachingHint="Cache" RenderOptions.EdgeMode="Unspecified">
+                                            Source="{Binding Photo}" RenderOptions.BitmapScalingMode="Fant" RenderOptions.CachingHint="Cache" RenderOptions.EdgeMode="Unspecified">
                                         <Image.Clip>
                                             <RectangleGeometry RadiusX="23" Rect="0,0,46,46" RadiusY="23"/>
                                         </Image.Clip>

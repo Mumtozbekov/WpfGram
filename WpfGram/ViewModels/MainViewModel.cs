@@ -62,11 +62,6 @@ namespace WpfGram.ViewModels
                                         {
                                             _chatsSet.Add(chat.Id);
                                             Chats.Add(new(chat));
-                                            if (chat.Photo != null && string.IsNullOrEmpty(chat.Photo.Small.Local.Path))
-                                            {
-
-                                                TgClientHelper.TgClient.Send(new DownloadFile(chat.Photo.Small.Id, 1, 0, 1, true), new DefaultHandler());
-                                            }
                                         }
                                     });
                                 }
