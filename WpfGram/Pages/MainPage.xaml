@@ -46,7 +46,7 @@
                             </Grid.ColumnDefinitions>
                             <Ellipse Height="48" Margin="6,4" Width="48">
                                 <Ellipse.Fill>
-                                        <ImageBrush
+                                    <ImageBrush
                                             ImageSource="{Binding Source={x:Static app:Global.Data},Path=User.ProfilePhoto.Big.Local.Path}" />
                                 </Ellipse.Fill>
                             </Ellipse>
@@ -91,9 +91,14 @@
                     <ui:Button Height="30" BorderThickness="0" Appearance="Transparent" Margin="6,0" Grid.Column="0" FontSize="19" Icon="{ui:SymbolIcon Compose20}" HorizontalAlignment="Right"/>
                     <ui:Button Height="32" BorderThickness="0" Appearance="Transparent" Grid.Column="2" Icon="{ui:SymbolIcon LockClosed20}" FontSize="19"/>
                 </Grid>
-                <ListView
-                    Grid.Row="2"
+                <ui:DynamicScrollViewer
+                     Grid.Row="2"
                     Margin="6,4,0,0"
+                    HorizontalScrollBarVisibility="Disabled"
+                    ScrollChanged="{utils:MethodBinding ChatsScrollChanged, {utils:EventSender}}">
+
+                    <ListView
+                   
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     SelectedItem="{Binding SelectedChat}"
                     ScrollViewer.CanContentScroll="True"
@@ -101,29 +106,29 @@
                     VirtualizingPanel.IsVirtualizing="False"
                     SelectionChanged="ListView_SelectionChanged"
                     ItemsSource="{Binding Chats}">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
-                            <Setter Property="Padding" Value="12"/>
-                            <Setter Property="Cursor" Value="Hand"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid MaxHeight="46" MaxWidth="400">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                                <Setter Property="Padding" Value="12"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid MaxHeight="46" MaxWidth="400">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <Grid>
-                                    <Border
+                                    <Grid>
+                                        <Border
                                         Height="46"
                                         Width="46"
                                         CornerRadius="25" ClipToBounds="True"
                                         Background="{ui:ThemeResource SystemAccentColorSecondaryBrush}"/>
 
 
-                                    <TextBlock
+                                        <TextBlock
                                         Padding="0"
                                         Name="tbTitle"
                                         Text="{Binding Chat.Title,Converter={converters:GetFirstCharacterConverter}}"
@@ -132,67 +137,68 @@
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center" />
 
-                                    <Image
+                                        <Image
                                             Source="{Binding Photo}" RenderOptions.BitmapScalingMode="Fant" RenderOptions.CachingHint="Cache" RenderOptions.EdgeMode="Unspecified">
-                                        <Image.Clip>
-                                            <RectangleGeometry RadiusX="23" Rect="0,0,46,46" RadiusY="23"/>
-                                        </Image.Clip>
-                                    </Image>
+                                            <Image.Clip>
+                                                <RectangleGeometry RadiusX="23" Rect="0,0,46,46" RadiusY="23"/>
+                                            </Image.Clip>
+                                        </Image>
 
-                                    <Rectangle Width="12" Height="12" Visibility="Collapsed" x:Name="rectOnline" Fill="#63b6ff" Margin="2,2,2,0" StrokeThickness="2" Stroke="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem},Path=Background}" RadiusX="5" RadiusY="5" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-                                </Grid>
+                                        <Rectangle Width="12" Height="12" Visibility="Collapsed" x:Name="rectOnline" Fill="#63b6ff" Margin="2,2,2,0" StrokeThickness="2" Stroke="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem},Path=Background}" RadiusX="5" RadiusY="5" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    </Grid>
 
-                                <Grid 
+                                    <Grid 
                                     Grid.Column="1"
                                     Margin="10,0,0,0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition
                                             Height="*" />
-                                        <RowDefinition
+                                            <RowDefinition
                                             Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <emoji:TextBlock
+                                        <emoji:TextBlock
                                             Text="{Binding Chat.Title}"
                                             Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
                                             FontSize="13" VerticalAlignment="Center"
                                             TextTrimming="CharacterEllipsis"
                                             Padding="0" />
-                                    <TextBlock Text="{Binding LastMessage.Date,Converter={converters:IntToDateTimeConverter},StringFormat='{}{0:hh:mm}'}"
+                                        <TextBlock Text="{Binding LastMessage.Date,Converter={converters:IntToDateTimeConverter},StringFormat='{}{0:hh:mm}'}"
                                             Grid.Column="1" VerticalAlignment="Top" />
-                                    <Border HorizontalAlignment="Right" Grid.Column="1" 
+                                        <Border HorizontalAlignment="Right" Grid.Column="1" 
                                             Visibility="{Binding Chat.UnreadCount,Converter={converters:NonZeroToVisibilityConverter},Mode=OneWay}" 
                                             x:Name="badge"  Grid.Row="1"
                                             VerticalAlignment="Center" 
                                             Padding="6,2,6,0" Height="20" MinWidth="20" CornerRadius="10" Background="{ui:ThemeResource SystemAccentColorPrimaryBrush}">
 
-                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontWeight="Medium" Text="{Binding Chat.UnreadCount}"/>
-                                    </Border>
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontWeight="Medium" Text="{Binding Chat.UnreadCount}"/>
+                                        </Border>
 
-                                    <controls:MessagePreviewer Grid.Row="1"
+                                        <controls:MessagePreviewer Grid.Row="1"
                                                            IsSelected="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem},Path=IsSelected, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                            DataContext="{Binding LastMessage.Content,UpdateSourceTrigger=PropertyChanged}" 
                                                            Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
                                                            />
-                                    <controls:ChatActionView x:Name="ActionView"
+                                        <controls:ChatActionView x:Name="ActionView"
                                                         DataContext="{Binding Action,UpdateSourceTrigger=PropertyChanged}" 
                                                          Visibility="{Binding Action,Converter={converters:NullableToVisibilityConverter}}" Grid.Row="1"/>
 
-                                    <TextBlock
+                                        <TextBlock
                                         Text="{Binding Action,FallbackValue=Action}"
                                         Grid.Row="1"
                                         Foreground="{ui:ThemeResource SystemAccentColorPrimaryBrush}"
                                         FontSize="15"
                                         VerticalAlignment="Top" />
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ui:DynamicScrollViewer>
 
 
 

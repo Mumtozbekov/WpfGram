@@ -21,9 +21,11 @@ namespace WpfGram.Helpers
         public static event Action<AuthorizationState> AuthorizationStateUpdated;
         public static event Action<BaseObject> UpdatedRecieved;
         public static event Action<BaseObject> CurrentUserUpdated;
+        private static Dictionary<long, Chat> _chats;
 
         public static void Init()
         {
+            _chats = new();
             TgClient = Td.Client.Create(new UpdateHandler());
         }
         public static void OnAuthorizationStateUpdated(AuthorizationState authorizationState)
@@ -34,10 +36,17 @@ namespace WpfGram.Helpers
         public static void OnUpdatedRecieved(BaseObject @object)
         {
             UpdatedRecieved?.Invoke(@object);
+            if (@object is Chat chat)
+            {
+                if (!_chats.ContainsKey(chat.Id))
+                {
+                    _chats.Add(chat.Id, chat);
+                }
+            }
         }
         public static Td.Client CreateTdClient()
         {
-
+            Init();
             return Td.Client.Create(new UpdateHandler());
 
         }
@@ -60,7 +69,22 @@ namespace WpfGram.Helpers
             CurrentUserUpdated?.Invoke(@object);
         }
 
+        public static async void LoadChatsAsync(ChatList chatList)
+        {
+            TgClientHelper.TgClient.Send(new LoadChats(null, 5), new CustomUpdateHandler(async result =>
+            {
+                if (result is Ok)
+                    LoadChatsAsync(chatList);
+                else if (result is Error error && error.Code == 404)
+                    return;
 
+            }));
+
+        }
+        public static async Task<List<Chat>> GetChats(int page, int limit)
+        {
+            return _chats.Select(x => x.Value).Skip((page - 1) * limit).Take(limit).ToList();
+        }
         public static List<Message> GetMessages(long chatId, long fromMessageId, int offset, int limit)
         {
             var gotMessagesEvent = new ManualResetEventSlim(false);

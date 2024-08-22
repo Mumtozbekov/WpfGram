@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +14,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using Telegram.Td.Api;
+
+using Typography.OpenFont.Tables;
 
 using WpfGram.Helpers;
 using WpfGram.TgHandlers;
@@ -27,54 +30,41 @@ namespace WpfGram.ViewModels
         private ObservableCollection<ChatViewModel> _chats;
         [ObservableProperty]
         private ChatViewModel _selectedChat;
+        private int _chatsPage = 1;
+        private int _chatsLimit = 10;
         public MainViewModel()
         {
             Chats = new();
             _chatsSet = new();
             ICollectionView view = CollectionViewSource.GetDefaultView(Chats);
 
-            view.SortDescriptions.Add(new SortDescription("Chat.Positions[0].Order", ListSortDirection.Descending));
             view.SortDescriptions.Add(new SortDescription("LastMessage.Date", ListSortDirection.Descending));
             TgClientHelper.UpdatedRecieved += TgClientHelper_UpdatedRecieved;
-            TgClientHelper.TgClient.Send(new GetChats(new ChatListMain(), 100), new DefaultHandler());
+            TgClientHelper.LoadChatsAsync(null);
+            LoadChats();
         }
 
+        private async void LoadChats()
+        {
+            var chats = await TgClientHelper.GetChats(_chatsPage, _chatsLimit);
+            foreach (var chat in chats)
+            {
+                await Application.Current.Dispatcher.InvokeAsync(async () =>
+                {
+
+                    if (!_chatsSet.Contains(chat.Id))
+                    {
+                        _chatsSet.Add(chat.Id);
+                        Chats.Add(new(chat));
+                    }
+                });
+            }
+        }
         private async void TgClientHelper_UpdatedRecieved(BaseObject @obj)
         {
             await Task.Run(async () =>
             {
-
-                if (obj is Chats chats)
-                {
-                    await Task.Run(() =>
-                    {
-                        var ids = chats.ChatIds;
-                        foreach (long id in chats.ChatIds)
-                        {
-
-                            TgClientHelper.TgClient.Send(new GetChat(id), new CustomUpdateHandler(async result =>
-                            {
-                                if (result is Chat chat)
-                                {
-                                    await Application.Current.Dispatcher.InvokeAsync(() =>
-                                    {
-                                        if (!_chatsSet.Contains(chat.Id))
-                                        {
-                                            _chatsSet.Add(chat.Id);
-                                            Chats.Add(new(chat));
-                                        }
-                                    });
-                                }
-
-
-                            }));
-                        }
-                        //SortChats();
-                    });
-
-                }
-
-                else if (obj is File photo)
+                if (obj is File photo)
                 {
                     Application.Current?.Dispatcher.Invoke(() =>
                     {
@@ -102,7 +92,7 @@ namespace WpfGram.ViewModels
                                     if (chatVm != null)
                                     {
                                         chatVm.LastMessage = msg.Message;
-                                        chatVm.Messages.Insert(0,new MessageViewModel(msg.Message, chatVm.Chat));
+                                        chatVm.Messages.Insert(0, new MessageViewModel(msg.Message, chatVm.Chat));
                                     }
 
                                 });
@@ -110,10 +100,14 @@ namespace WpfGram.ViewModels
                         }
                         else
                         {
-                            TgClientHelper.TgClient.Send(new GetChat(msg.Message.ChatId), new UpdateHandler());
-
+                            _chatsSet.Add(msg.Message.ChatId);
+                            var newChat = await TgClientHelper.GetChats([msg.Message.ChatId]);
+                            Application.Current?.Dispatcher.Invoke(() =>
+                            {
+                                Chats.Add(new(newChat[0]));
+                            });
                         }
-                       // SortChats();
+                        // SortChats();
                         break;
                     case UpdateUserStatus updateStatus:
 
@@ -143,7 +137,7 @@ namespace WpfGram.ViewModels
                             var updatedchat = Chats.FirstOrDefault(c => c.Chat.Id == pos.ChatId);
                             if (updatedchat != null && updatedchat.Chat.Positions.Length > 0)
                                 updatedchat.Chat.Positions[0] = pos.Position;
-                          //  SortChats();
+                            //  SortChats();
                         }
                         else
                         {
@@ -151,6 +145,7 @@ namespace WpfGram.ViewModels
 
                         }
                         break;
+                   
 
                 }
             });
@@ -181,20 +176,25 @@ namespace WpfGram.ViewModels
 
             if (parameter is ScrollViewer scv)
             {
-                //ScrollViewer scv = UIHelper.FindChildren<ScrollViewer>(list).FirstOrDefault();
-                //if (scv != null)
-                //{
                 if (scv.ScrollableHeight < 0 || scv.ScrollableHeight <= scv.VerticalOffset + 20)
                 {
-                    //using (await _loadMoreLock.WaitAsync())
-                    //{
-
-                        //scv.ScrollToVerticalOffset(scv.VerticalOffset - 40);
-                        if (SelectedChat != null)
-                            await SelectedChat.GetMessages(5);
-                    //}
+     
+                    if (SelectedChat != null)
+                        await SelectedChat.GetMessages(5);
                 }
-                //}
+            }
+        }
+        public async void ChatsScrollChanged(object parameter)
+        {
+
+            if (parameter is ScrollViewer scv)
+            {
+
+                if (scv.ScrollableHeight < 0 || scv.ScrollableHeight <= scv.VerticalOffset + 20 && _chatsSet.Count > 0)
+                {
+                    _chatsPage += 1;
+                    LoadChats();
+                }
             }
         }
         internal void ChatSelectionChanged(SelectionChangedEventArgs e)

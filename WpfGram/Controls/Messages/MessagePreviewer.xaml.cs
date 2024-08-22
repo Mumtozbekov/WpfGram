@@ -60,7 +60,7 @@ namespace WpfGram.Controls
                     break;
                 case TdApi.MessageVideo mv:
                     Content.Text = string.IsNullOrEmpty(mv.Caption.Text) ? " Video" : mv.Caption.Text.Trim().Replace(Environment.NewLine, " ");
-                    MediaPreview.Source = mv.Video.Minithumbnail.Data.ToImage();
+                    MediaPreview.Source = mv.Video.Minithumbnail?.Data.ToImage();
                     MediaPreview.Visibility = Visibility.Visible;
                     //Content.Foreground = Resources["LinksForeground"] as SolidColorBrush;
 
