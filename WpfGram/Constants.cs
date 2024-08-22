@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +8,8 @@ namespace WpfGram
 {
     internal class Constants
     {
-        public static int ApiId = 779249;
-        public static string ApiHash = "7b2cb692cf15519a31a3fb39b0f56b66";
+        public static int ApiId;
+        public static string ApiHash = "";
         public static Dictionary<string, string> AvatarColors = new Dictionary<string, string>(){
 
             {"LightBlue","#81a4d8"},
