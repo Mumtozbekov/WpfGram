@@ -94,7 +94,7 @@ namespace WpfGram
                     case AuthorizationStateWaitPhoneNumber:
 
                         Navigate(typeof(AuthorizationPage));
-                        TgClientHelper.TgClient.Send(new TdApi.GetMe(), new CurrentUserUpdateHandler());
+                        TgClientHelper.TgClient.Send(new GetMe(), new CurrentUserUpdateHandler());
                         //Application.Current.Dispatcher.Invoke(new Action(() => NavigationService.Navigate(new MainPage())));
                         TgClientHelper.AuthorizationStateUpdated -= TgClientHelper_AuthorizationStateUpdated;
                         break;
@@ -105,7 +105,7 @@ namespace WpfGram
                         Navigate(typeof(AuthorizationPasswordPage));
                         break;
                     case AuthorizationStateReady:
-                        TgClientHelper.TgClient.Send(new TdApi.GetMe(), new CurrentUserUpdateHandler());
+                        TgClientHelper.TgClient.Send(new GetMe(), new CurrentUserUpdateHandler());
                         Navigate(typeof(MainPage));
                         break;
                 }

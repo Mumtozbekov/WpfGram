@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Markup;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 using Telegram.Td.Api;
 
@@ -24,10 +26,10 @@ namespace WpfGram.Converters
                     {
                         var task = Task.Run(async () =>
                         {
-                            var path = msg.Sticker.StickerValue.Local.Path;
-                            return path;
+                            var img = LoadWebP(msg.Sticker.StickerValue.Local.Path);
+                            return img;
                         });
-                        return new TaskCompletionNotifier<string>(task); ;
+                        return new TaskCompletionNotifier<BitmapSource>(task);
                      
 
                     }
@@ -38,11 +40,11 @@ namespace WpfGram.Converters
 
                             var stickerPath = await TgClientHelper.DownloadFile(msg.Sticker.StickerValue.Id);
                             if (string.IsNullOrEmpty(stickerPath))
-                                return string.Empty;
+                                return null;
 
-                            return stickerPath;
+                            return LoadWebP(stickerPath); 
                         });
-                        return new TaskCompletionNotifier<string>(task);
+                        return new TaskCompletionNotifier<BitmapSource>(task);
                     }
                 }
                 catch (Exception ex) { }
@@ -59,6 +61,14 @@ namespace WpfGram.Converters
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return this;
+        }
+
+        BitmapSource LoadWebP(string path)
+        {
+            var decoder = BitmapDecoder.Create(new Uri(path, UriKind.Relative), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
+            var converted = new FormatConvertedBitmap(decoder.Frames[0], PixelFormats.Bgra32, null, 0);
+            converted.Freeze();
+            return converted;
         }
     }
 }
