@@ -8,6 +8,7 @@
              xmlns:converters="clr-namespace:WpfGram.Converters" 
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              mc:Ignorable="d" 
+             Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:MessageBubble},Path=ShowBackground,Converter={StaticResource BoolToVisibilityConverter}}"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Template>

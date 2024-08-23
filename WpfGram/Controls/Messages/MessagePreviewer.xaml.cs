@@ -97,7 +97,6 @@ namespace WpfGram.Controls
                     break;
                 case TdApi.MessageAnimation ma:
                     //     MediaPreview.Source = ma.Animation.Thumbnail.File..ToImage();
-
                     Content.Text = "GIF";
                     //  Content.Foreground = Resources["LinksForeground"] as SolidColorBrush;
                     break;

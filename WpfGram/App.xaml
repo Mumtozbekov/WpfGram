@@ -15,6 +15,7 @@
                 <!--<ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Styles/Assets/Palette.xaml" />-->
 
             </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <Style TargetType="controls:PhoneTextBox"
                     BasedOn="{StaticResource DefaultTextBoxStyle}" />
 

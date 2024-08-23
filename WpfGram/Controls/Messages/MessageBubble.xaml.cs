@@ -37,6 +37,15 @@ namespace WpfGram.Controls
         // Using a DependencyProperty as the backing store for ShowBackground.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ShowBackgroundProperty =
             DependencyProperty.Register("ShowBackground", typeof(bool), typeof(MessageBubble), new PropertyMetadata(true));
+        public bool ShowPhoto
+        {
+            get { return (bool)GetValue(ShowPhotoProperty); }
+            set { SetValue(ShowPhotoProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ShowPhoto.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShowPhotoProperty =
+            DependencyProperty.Register("ShowPhoto", typeof(bool), typeof(MessageBubble), new PropertyMetadata(false));
 
 
         public MessageBubble()
@@ -72,12 +81,27 @@ namespace WpfGram.Controls
                         ShowBackground = false;
                         ContentBorder.MaxWidth = 414;
                         if ((message.Message.Content is MessageSticker stick && stick.Sticker.Format is StickerFormatTgs) || message.Message.Content is MessageAnimatedEmoji)
-                            ContentBorder.Child = new AnimatedStickerView() { DataContext = message.Message, 
-                                HorizontalContentAlignment=HorizontalAlignment.Left, 
-                             VerticalContentAlignment = VerticalAlignment.Bottom};
+                            ContentBorder.Child = new AnimatedStickerView()
+                            {
+                                DataContext = message.Message,
+                                HorizontalContentAlignment = HorizontalAlignment.Left,
+                                VerticalContentAlignment = VerticalAlignment.Bottom
+                            };
                         else
                             ContentBorder.Child = new StickerMessageContent(message);
                     }
+                    break;
+                case MessageChatAddMembers:
+                case MessageChatJoinByLink:
+                case MessageChatJoinByRequest:
+                case MessageChatDeleteMember:
+                case MessageChatDeletePhoto:
+                case MessageChatSetBackground:
+                case MessageChatChangeTitle:
+                    ShowBackground = false;
+                    ShowPhoto = false;
+                    HorizontalAlignment = HorizontalAlignment.Center;
+                    ContentBorder.Child = new ChatUpdatesMessageContent(message);
                     break;
                     //case MessagePhoto:
                     //    return element.FindResource("photoMessage") as DataTemplate;

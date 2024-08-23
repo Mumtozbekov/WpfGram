@@ -13,6 +13,7 @@
                     Source="pack://application:,,,/Themes/Generic.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <UserControl.Style>
@@ -28,7 +29,7 @@
                             </Grid.ColumnDefinitions>
                             <Grid 
                 x:Name="PhotoGrid"
-                Visibility="Collapsed"
+                Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent},Path=ShowPhoto, Converter={StaticResource BoolToVisibilityConverter}}"
                 VerticalAlignment="Bottom" 
                 HorizontalAlignment="Left">
 
@@ -93,7 +94,7 @@
                             <DataTrigger
                         Binding="{Binding Message.IsOutgoing}"
                         Value="false">
-                                <Setter Property="Visibility" Value="Visible" TargetName="PhotoGrid"/>
+                                <Setter Property="ShowPhoto" Value="True" />
                             </DataTrigger>
                             <DataTrigger
                         Binding="{Binding Message.IsOutgoing}"
