@@ -1,4 +1,6 @@
-﻿using WpfGram.Helpers;
+﻿using System.Windows;
+
+using WpfGram.Helpers;
 
 using Td = Telegram.Td;
 using TdApi = Telegram.Td.Api;
@@ -8,9 +10,10 @@ namespace WpfGram.TgHandlers
     {
         void Td.ClientResultHandler.OnResult(TdApi.BaseObject @object)
         {
-            if (@object is TdApi.Error)
+            if (@object is TdApi.Error error)
             {
                 /// Print("Receive an error:" + _newLine + @object);
+                MessageBox.Show(error.Message);
                 TgClientHelper.OnAuthorizationStateUpdated(null); // repeat last action
             }
             else

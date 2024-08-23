@@ -1,0 +1,149 @@
+﻿<Window x:Class="WpfGram.MediaViewerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:local="clr-namespace:WpfGram" 
+        xmlns:controls="clr-namespace:WpfGram.Controls"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        Background="#5D4d4d4d"
+        WindowState="Maximized"
+        AllowsTransparency="True"
+        Title="MediaViewerWindow" Height="700" Width="1600">
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}" >
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter Content="{TemplateBinding Content}" 
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#4d000000"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="96"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="96"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="96"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="96"/>
+        </Grid.ColumnDefinitions>
+        <Button x:Name="btnClose" Click="btnClose_Click" Grid.Column="3">
+            <ui:SymbolIcon Symbol="Dismiss28"  FontSize="36" Height="28" Width="28"/>
+        </Button>
+        <Button x:Name="btnPrev" Click="btnPrev_Click" Grid.Row="1">
+            <ui:SymbolIcon Symbol="ChevronLeft28" FontSize="36" Height="36" Width="36"/>
+        </Button>
+        <Button x:Name="btnNext" Click="btnNext_Click" Grid.Column="3" Grid.Row="1" >
+            <ui:SymbolIcon Symbol="ChevronRight28"  FontSize="36" Height="36" Width="36"/>
+        </Button>
+        <Image Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2" VerticalAlignment="Center" Source="{Binding ElementName=imageList,Path=SelectedItem.Local.Path}" />
+        <!--<Border Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2" VerticalAlignment="Center">
+            <ContentPresenter Content="{Binding ElementName=imageList,Path=SelectedItem,Mode=OneWay}" />
+        </Border>-->
+        <controls:CenteredListBox
+            Grid.Row="2"
+            SelectedIndex="0"
+            Orientation="Horizontal"
+            Grid.Column="2"
+            MaxWidth="1090"
+            ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:MediaViewerWindow},Path=Photos}"
+            HorizontalAlignment="Left"
+            x:Name="imageList" >
+            <controls:CenteredListBox.Resources>
+                <Storyboard x:Key="SlideRight"
+                    FillBehavior="Stop"
+                    Duration="0:0:0.5">
+                    <DoubleAnimation 
+                             Storyboard.TargetProperty="(RenderTransform).(TranslateTransform.X)"
+                             Duration="0:0:0.2" />
+
+                </Storyboard>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Width" Value="57"/>
+                    <Setter Property="Height" Value="82"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border Margin="3" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" >
+                                    <Image Source="{Binding Local.Path}"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter  Property="Width" Value="82"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </controls:CenteredListBox.Resources>
+            <!--<ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=404"/>
+            </ListBoxItem>
+            <ListBoxItem >
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=1"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=2"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=3"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=4"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=5"/>
+            </ListBoxItem>
+            <ListBoxItem >
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=6"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=7"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=8"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=9"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=10"/>
+            </ListBoxItem>
+            <ListBoxItem >
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=11"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=12"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=13"/>
+            </ListBoxItem>
+            <ListBoxItem>
+                <Image  VerticalAlignment="Center" Source="https://picsum.photos/800/?random=14"/>
+            </ListBoxItem>-->
+        </controls:CenteredListBox>
+    </Grid>
+</Window>

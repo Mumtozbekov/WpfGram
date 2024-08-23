@@ -110,8 +110,8 @@ namespace WpfGram.Controls
         }
         private void Preview_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            // var win = new MediaViewerWindow(Photo.Sizes[^1].Photo);
-            //win.Show();
+            var win = new MediaViewerWindow(Photo.Sizes[^1].Photo);
+            win.Show();
         }
     }
 }
